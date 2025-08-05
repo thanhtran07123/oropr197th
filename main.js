@@ -39,7 +39,7 @@ check pact honey trip answer nation wagon balance hard cabin leaf spend
 `.trim();
 
 const CONFIG = {
-    rpcEndpoint: "https://testnet-rpc.zigchain.com",
+    rpcEndpoint: "https://public-zigchain-testnet-rpc.numia.xyz",
     chainId: "zig-test-2",
     zigDenom: "uzig",
     oroDenom: "coin.zig10rfjm85jmzfhravjwpq3hcdz8ngxg7lxd0drkr.uoro",
