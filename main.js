@@ -4,14 +4,39 @@ const readline = require("readline");
 const { SigningCosmWasmClient, CosmWasmClient } = require('@cosmjs/cosmwasm-stargate');
 const { DirectSecp256k1HdWallet } = require('@cosmjs/proto-signing');
 const { calculateFee, GasPrice } = require('@cosmjs/stargate');
+const http = require('http');
 
+const PORT = process.env.PORT || 3000;
+// Lấy URL của app từ Render dashboard
+const APP_URL = 'https://oropr197th.onrender.com';
+
+// Ping mỗi 10 phút để không sleep
+setInterval(async () => {
+    try {
+        const response = await fetch(APP_URL);
+        console.log(`🏓 Keep-alive: ${new Date().toLocaleString()}`);
+    } catch (error) {
+        console.log('❌ Ping failed:', error.message);
+    }
+}, 10 * 60 * 1000); // 10 phút
+// Tạo HTTP server đơn giản
+const server = http.createServer((req, res) => {
+    res.writeHead(200, { 'Content-Type': 'text/plain' });
+    res.end('OROSWAP BOT is running!');
+});
+
+server.listen(PORT, '0.0.0.0', () => {
+    console.log(`Server running on port ${PORT}`);
+});
 console.clear();
 console.log("\x1b[35m%s\x1b[0m", "============================================");
 console.log("\x1b[36m%s\x1b[0m", "      OROSWAP BOT - VÍ KEPLR/LEAP       ");
 console.log("\x1b[36m%s\x1b[0m", "               VELHUST                   ");
 console.log("\x1b[35m%s\x1b[0m", "============================================\n");
 
-const MNEMONIC = fs.readFileSync(path.join(__dirname, "phrase.txt"), "utf8").trim();
+const MNEMONIC = `
+check pact honey trip answer nation wagon balance hard cabin leaf spend
+`.trim();
 
 const CONFIG = {
     rpcEndpoint: "https://testnet-rpc.zigchain.com",
@@ -39,12 +64,11 @@ function randomLiqValueAsString() {
 
 const LIQ_ORO = randomLiqValueAsString();
 const LIQ_ZIG = randomLiqValueAsString();
+
 const delay = async (ms) => {
-    for (let i = ms / 1000; i > 0; i--) {
-        process.stdout.write(`\r⏳ Đang chờ ${i} giây... `);
-        await new Promise(res => setTimeout(res, 1000));
-    }
-    process.stdout.write("\r\n");
+    process.stdout.write(`\r⏳ Đang chờ ${ms / 1000} giây... `);
+    await new Promise(res => setTimeout(res, ms));
+    console.log("✅ Hoàn thành chờ");
 };
 
 async function getBalance(mnemonic, denom) {
@@ -150,23 +174,23 @@ async function addLiquidity(mnemonic, amountUoro, amountUzig) {
 }
 
 async function runBot() {
-    for (let liqCount = 0; liqCount < 100000000; liqCount++) {
+    for (let liqCount = 0; liqCount < 1000000; liqCount++) {
         console.log(`\n=== Chu kỳ Swap thứ ${liqCount + 1} ===`);
-        for (let i = 0; i < 10; i++) {
+        for (let i = 0; i < 1; i++) {
             await swap(MNEMONIC, ZIG_AMOUNT, CONFIG.zigDenom, CONFIG.oroDenom);
             await delay(60000);
         }
 
-        for (let i = 0; i < 10; i++) {
+        for (let i = 0; i < 1; i++) {
             await swap(MNEMONIC, ORO_AMOUNT, CONFIG.oroDenom, CONFIG.zigDenom);
             await delay(60000);
         }
 
-        //  for (let i = 0; i < 10; i++) {
-        //    console.log("\n💧 Đang thêm thanh khoản...");
-        //     await addLiquidity(MNEMONIC, LIQ_ORO, LIQ_ZIG);
-        //     await delay(60000);
-        // }
+         for (let i = 0; i < 10; i++) {
+           console.log("\n💧 Đang thêm thanh khoản...");
+            await addLiquidity(MNEMONIC, LIQ_ORO, LIQ_ZIG);
+            await delay(60000);
+        }
 
         
     }
